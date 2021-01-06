@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Softwery</title>
+</head>
+<body>
+    <div id="app">
+        <p v-bind:style="{fontSize: textSize + 'px'}" v-text='message' ></p>        
+
+        <input type="text" placeholder="CEP" v-model="cepNumber"/>
+
+        <input type="range" min="1" max="100" value="1" v-model="textSize"/>
+
+        <ul v-bind:[proprety]="value">
+            <li v-if="cep.cep" v-text="cep.cep"></li>
+            <li v-if="cep.logradouro" v-text="cep.logradouro"></li>
+            <li v-if="cep.complemento" v-text="cep.complemento"></li>
+            <li v-if="cep.bairro" v-text="cep.bairro"></li>
+            <li v-if="cep.localidade" v-text="cep.localidade"></li>
+            <li v-if="cep.uf" v-text="cep.uf"></li>
+        </ul>
+
+        <a v-bind:href="cepUrl" target="_blank" rel="noopener noreferrer">cep</a>
+
+        <p v-on:click="reverseMessage">{{message}}</p>
+
+        <text-component>
+            <template v-slot:header>
+                <h2>This is header</h2>
+            </template>
+            Giovanni
+        </text-component>
+
+
+    </div>
+
+    <script src="node_modules/vue/dist/vue.js"></script>
+
+    <script>
+
+        Vue.component('text-component', {
+            template: `
+                <div>
+                    <header>
+                        <slot name="header"></slot>
+                    </header>
+                    <p>
+                        <slot></slot>
+                    </p>
+                </div>
+            `
+        })
+
+        let app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello World',
+                cepNumber: '',
+                cep : {
+                    cep: "",
+                    logradouro: "",
+                    complemento: "",
+                    bairro: "",
+                    localidade: "",
+                    uf: "",
+                    ibge: "",
+                    gia: "",
+                    ddd: "",
+                    siafi: ""
+                },
+                cepUrl: '#',
+                proprety: 'title',
+                value:'Funcionando eheheh',
+                textSize: 10
+            },
+            beforeUpdate() {
+                let url = `https://viacep.com.br/ws/${this.cepNumber}/json/`
+                fetch(url)
+                    .then(cep => {
+                        cep.json().then(json => {
+                            if (json.erro) {
+                                this.cep = ''
+                            } else {
+                                this.cep = json
+                                this.cepUrl = url
+                            }
+                        })
+                    }).catch(() => {
+                        this.cep = ''
+                        this.cepUrl = '#'
+                    })
+            },
+            methods: {
+                reverseMessage: function () {
+                    this.message = this.message.split('').reverse().join('')
+                },
+            }
+        });
+
+    </script>
+</body>
+</html>

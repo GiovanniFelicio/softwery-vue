@@ -37,7 +37,7 @@
         <input type="text" id="text2" v-model="message">
         
         <ul>
-            <li v-for="state in states">{{state.nome}}</li>
+            <li v-for="(state, key, idx) in states" v-if="state.regiao.id == 5">{{key}} - {{state.nome}}</li>            
         </ul>
 
         <h5>{{message | upper}}</h5>
