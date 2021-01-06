@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="app">
+
+        <h4>######## Diretivas ########</h5>
+
+        <!--remove-->
+        <p v-if="show">v-if</p>
+        <p v-if="tickets >= 50" key="available">(v-if) tem tickets</p>
+        <p v-else-if="tickets >= 1" key="almost">(v-else-if) quae acabando tickets</p>
+        <p v-else key="empty">(v-else) não tem tickets</p>
+        
+        <!--oculta-->
+        <p v-show="show">v-show</p>
+
+        <p v-text="diretivatext"></p>
+
+        <p v-html="diretivahtml"></p>
+
+        <p v-once>{{diretivaonce}}</p>
+
+        <h5>{{message | placeholder(' NotFound')}}</h5> 
+        <h5>{{msg | truncate(100)}}</h5>
+        
+        <input type="text" id="text" v-on:blur="replaceMessage($event.target.value)"/>
+
+        <h6>Name: {{person.name}}</h6>
+        <h6>{{fullPerson}}</h6>
+        
+        <input type="text" id="text2" v-model="message">
+        
+        <ul>
+            <li v-for="state in states">{{state.nome}}</li>
+        </ul>
+
+        <h5>{{message | upper}}</h5>
+
+        <h2>My salary is : {{salary | real}} {{salary | pluralize(['real', 'reais'])}}</h2>
+        <input type="text" id="salary" v-model="salary"/>
+    </div>
+
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="node_modules/vue2-filters/dist/vue2-filters.js"></script>
+
+    <script>
+        let app = new Vue({
+            el: '#app',
+            data: {
+                message: 'essa mensagem',
+                person: {
+                    name: 'Giovanni',
+                    age: 19
+                },
+                states:[],
+                salary: 1,
+                msg: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et laudantium veritatis, pariatur quod beatae quisquam quos eum excepturi dolor placeat perspiciatis cum temporibus! Saepe iste, aliquam quae veritatis reprehenderit suscipit.',
+                show: true,
+                tickets: 50,
+                diretivatext: 'v-text',
+                diretivahtml: '<p><u>v-html</u></p>',
+                diretivaonce: 'v-once'
+            },
+            methods: {
+                reverseMessage: function() {
+                    this.message = this.message.split('').reverse().join('')
+                },
+                replaceMessage: function(newMessage) {
+                    this.message = newMessage
+                }
+            },
+            computed: {
+                fullPerson: {
+                    get: function () {
+                        return `${this.person.name} ${this.person.age}`
+                    },
+                    set: function(newVal) {
+                        let name = newVal.split(' ');
+
+                        this.person.name = name[0]
+                    }
+                }
+            },
+            watch: {
+                message: function(newVal) {
+                    console.log(newVal)
+                }
+            },
+            beforeCreate() {
+                console.log('before Create')
+            },
+            created() {
+                fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+                .then((res) => {
+                    res.json().then((data) => {
+                        this.states = data;
+                    })
+                })
+            },
+            beforeMount() {
+                console.log('before Mount')
+            },
+            mounted() {
+                console.log('mounted')
+            },
+            beforeUpdate() {
+                console.log('before Updated')
+            },
+            updated() {
+                console.log('updated')
+            },
+            beforeDestroy() {
+                console.log('before Destroy')
+            },
+            updated() {
+                console.log('destroyed')
+            },
+            filters: {
+                upper: function(val) {
+                    return val.toUpperCase();
+                },
+                real: function(value) {
+                    return `R$ ${parseFloat(value).toFixed(2)}`
+                }
+            }            
+        })
+    </script>
+</body>
+</html>
